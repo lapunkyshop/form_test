@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de la Taberna</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap');
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        @keyframes lightning {
+            0% {
+                color: #0066ff;
+                text-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+            }
+            2% {
+                color: #ffffff;
+                text-shadow: 
+                    0 0 20px rgba(255, 255, 255, 1),
+                    0 0 40px rgba(0, 102, 255, 0.8),
+                    0 0 60px rgba(0, 102, 255, 0.6);
+            }
+            4% {
+                color: #0066ff;
+                text-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+            }
+            6% {
+                color: #ffffff;
+                text-shadow: 
+                    0 0 20px rgba(255, 255, 255, 1),
+                    0 0 50px rgba(0, 102, 255, 1),
+                    0 0 70px rgba(0, 102, 255, 0.8);
+            }
+            8% {
+                color: #0066ff;
+                text-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+            }
+            100% {
+                color: #0066ff;
+                text-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+            }
+        }
+
+        h1 {
+            font-family: 'Metal Mania', cursive;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            animation: lightning 5s infinite;
+            text-transform: uppercase;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            background: rgba(20, 20, 20, 0.6);
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ff0000;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #ffffff;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input[type="date"] {
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+        button {
+            background: linear-gradient(145deg, #ff0000, #cc0000);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #cc0000, #990000);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .success-message {
+            color: #00ff00;
+            text-align: center;
+            display: none;
+            padding: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #ff0000;
+            text-align: center;
+            display: none;
+            padding: 10px;
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .form-group:hover {
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff0000;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formulario nuevo miembro de la Taberna</h1>
+    <form id="membershipForm">
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+        </div>
+
+        <div class="form-group">
+            <label for="apellidos">Apellidos:</label>
+            <input type="text" id="apellidos" name="apellidos" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaNacimiento">Fecha de nacimiento:</label>
+            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+        </div>
+
+        <div class="form-group">
+            <label for="dni">DNI:</label>
+            <input type="text" id="dni" name="dni" pattern="[0-9]{8}[A-Z]{1}" title="Ingrese 8 números seguidos de una letra mayúscula" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Correo electrónico:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono" required>
+        </div>
+
+        <div class="form-group">
+            <label for="direccion">Dirección:</label>
+            <textarea id="direccion" name="direccion" required></textarea>
+        </div>
+
+        <button type="submit">🤘 Unirte Ahora 🤘</button>
+    </form>
+
+    <p class="success-message">🤘 ¡Formulario enviado con éxito! 🤘</p>
+    <p class="error-message">💀 Hubo un error al enviar el formulario. Por favor, intenta nuevamente.</p>
+
+    <script>
+        $(document).ready(function() {
+            $('#membershipForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    nombre: $('#nombre').val(),
+                    apellidos: $('#apellidos').val(),
+                    fechaNacimiento: $('#fechaNacimiento').val(),
+                    dni: $('#dni').val(),
+                    email: $('#email').val(),
+                    telefono: $('#telefono').val(),
+                    direccion: $('#direccion').val()
+                };
+
+                $.ajax({
+                    url: 'https://formsubmit.co/TU_EMAIL@email.com', // Reemplaza con tu email
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        $('.success-message').show();
+                        $('#membershipForm')[0].reset();
+                        setTimeout(function() {
+                            $('.success-message').hide();
+                        }, 3000);
+                    },
+                    error: function(err) {
+                        $('.error-message').show();
+                        setTimeout(function() {
+                            $('.error-message').hide();
+                        }, 3000);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
