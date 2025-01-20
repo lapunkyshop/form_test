@@ -79,6 +79,47 @@
             letter-spacing: 1px;
         }
 
+        .date-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 0 10px;
+            height: 42px;
+        }
+
+        .date-input-container:focus-within {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+        .date-part {
+            width: 2em;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            padding: 0;
+            text-align: center;
+        }
+
+        .year-part {
+            width: 4em;
+        }
+
+        .date-separator {
+            color: #ffffff;
+            padding: 0 5px;
+            user-select: none;
+        }
+
+        .date-part:focus {
+            outline: none;
+        }
+
         input, textarea {
             width: 100%;
             padding: 10px;
@@ -175,15 +216,32 @@
 
         <div class="form-group">
             <label for="fechaNacimiento">Fecha de nacimiento:</label>
-            <input type="tel" 
-                   inputmode="numeric" 
-                   pattern="[0-9]*"
-                   id="fechaNacimiento" 
-                   name="fechaNacimiento" 
-                   maxlength="10"
-                   placeholder="DD/MM/AAAA"
-                   autocomplete="off"
-                   required>
+            <div class="date-input-container">
+                <input type="tel" 
+                       class="date-part" 
+                       id="day" 
+                       inputmode="numeric" 
+                       maxlength="2" 
+                       placeholder="DD"
+                       autocomplete="off">
+                <span class="date-separator">/</span>
+                <input type="tel" 
+                       class="date-part" 
+                       id="month" 
+                       inputmode="numeric" 
+                       maxlength="2" 
+                       placeholder="MM"
+                       autocomplete="off">
+                <span class="date-separator">/</span>
+                <input type="tel" 
+                       class="date-part year-part" 
+                       id="year" 
+                       inputmode="numeric" 
+                       maxlength="4" 
+                       placeholder="AAAA"
+                       autocomplete="off">
+                <input type="hidden" id="fechaNacimiento" name="fechaNacimiento">
+            </div>
         </div>
 
         <div class="form-group">
@@ -214,59 +272,72 @@
 
     <script>
         $(document).ready(function() {
-            // Función para manejar el formato de la fecha
-            $('#fechaNacimiento').on('input', function(e) {
-                let value = e.target.value.replace(/\D/g, ''); // Solo permite números
-                let formattedValue = '';
-                
-                if (value.length > 0) {
-                    // Añade el primer grupo de números (día)
-                    formattedValue = value.substring(0, 2);
-                    
-                    if (value.length > 2) {
-                        // Añade la primera barra y el segundo grupo (mes)
-                        formattedValue += '/' + value.substring(2, 4);
+            // Función para manejar el salto automático entre campos
+            $('.date-part').on('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                $(this).val(value);
+
+                if (value.length >= $(this).attr('maxlength')) {
+                    // Si es el día y es mayor a 31, limpiarlo
+                    if ($(this).attr('id') === 'day' && parseInt(value) > 31) {
+                        $(this).val('');
+                        return;
                     }
-                    
-                    if (value.length > 4) {
-                        // Añade la segunda barra y el tercer grupo (año)
-                        formattedValue += '/' + value.substring(4, 8);
+                    // Si es el mes y es mayor a 12, limpiarlo
+                    if ($(this).attr('id') === 'month' && parseInt(value) > 12) {
+                        $(this).val('');
+                        return;
                     }
+                    // Mover al siguiente input si existe
+                    $(this).next().next().focus();
                 }
-                
-                $(this).val(formattedValue);
+
+                // Actualizar el campo oculto con la fecha completa
+                updateHiddenDate();
             });
 
+            // Manejar el retroceso entre campos
+            $('.date-part').on('keydown', function(e) {
+                if (e.keyCode === 8 && $(this).val().length === 0) {
+                    $(this).prev().prev().focus();
+                }
+            });
+
+            // Función para actualizar el campo oculto con la fecha completa
+            function updateHiddenDate() {
+                const day = $('#day').val();
+                const month = $('#month').val();
+                const year = $('#year').val();
+                if (day && month && year) {
+                    $('#fechaNacimiento').val(`${day}/${month}/${year}`);
+                }
+            }
+
             // Validación de la fecha antes del envío
-            function isValidDate(dateString) {
-                const parts = dateString.split('/');
-                if (parts.length !== 3) return false;
-                
-                const day = parseInt(parts[0]);
-                const month = parseInt(parts[1]) - 1; // Los meses en JS van de 0 a 11
-                const year = parseInt(parts[2]);
-                
-                const date = new Date(year, month, day);
-                
-                return date.getDate() === day &&
-                       date.getMonth() === month &&
-                       date.getFullYear() === year;
+            function isValidDate(day, month, year) {
+                const date = new Date(year, month - 1, day);
+                return date.getDate() === parseInt(day) &&
+                       date.getMonth() === month - 1 &&
+                       date.getFullYear() === parseInt(year);
             }
 
             $('#membershipForm').on('submit', function(e) {
                 e.preventDefault();
                 
+                const day = $('#day').val();
+                const month = $('#month').val();
+                const year = $('#year').val();
+
                 // Validar la fecha antes de enviar
-                const fechaNacimiento = $('#fechaNacimiento').val();
-                if (!isValidDate(fechaNacimiento)) {
-                    alert('Por favor, introduce una fecha válida en formato DD/MM/AAAA');
+                if (!isValidDate(day, month, year)) {
+                    alert('Por favor, introduce una fecha válida');
                     return;
                 }
 
                 const formData = {
                     nombre: $('#nombre').val(),
                     apellidos: $('#apellidos').val(),
-                    fechaNacimiento: fechaNacimiento,
+                    fechaNacimiento: $('#fechaNacimiento').val(),
                     dni: $('#dni').val(),
                     email: $('#email').val(),
                     telefono: $('#telefono').val(),
