@@ -175,11 +175,14 @@
 
         <div class="form-group">
             <label for="fechaNacimiento">Fecha de nacimiento:</label>
-            <input type="text" 
+            <input type="tel" 
+                   inputmode="numeric" 
+                   pattern="[0-9]*"
                    id="fechaNacimiento" 
                    name="fechaNacimiento" 
                    maxlength="10"
                    placeholder="DD/MM/AAAA"
+                   autocomplete="off"
                    required>
         </div>
 
